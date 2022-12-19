@@ -24,5 +24,10 @@
         "friendsofphp/php-cs-fixer": "^3.13",
         "symfony/console": "^5.4",
         "phpunit/phpunit": "^9.5"
+    },
+    "scripts": {
+        "test": [
+            "phpunit"
+        ]
     }
 }
