@@ -1,0 +1,30 @@
+{
+    "name": "rice/ctl",
+    "description": "php control",
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        },
+        "files": [
+            "tests/common.php"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "Rice\\Ctl\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "dengmf",
+            "email": "1015814408@qq.com"
+        }
+    ],
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.13",
+        "symfony/console": "^5.4"
+    },
+    "require": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
