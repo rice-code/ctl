@@ -2,14 +2,14 @@
 
 namespace Rice\Ctl\Console\Command;
 
-use Rice\Basic\Support\Generate\FixGenerate;
+use Rice\Ctl\Generate\FixGenerate;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Rice\Basic\Support\Generate\Documentation\AccessorGenerator;
+use Rice\Ctl\Generate\Documentation\AccessorGenerator;
 
-class FixCommand extends Command
+class AccessorCommand extends Command
 {
     protected static $defaultName = 'rice:accessor';
 
@@ -27,12 +27,12 @@ class FixCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $path = $input->getArgument('path')[0];
-        (new AccessorGenerator($path))->apply();
+            $path = $input->getArgument('path')[0];
+            (new AccessorGenerator($path))->apply();
 
-        FixGenerate::handle($path);
+            FixGenerate::handle($path);
 
-        $output->write('done.');
+            $output->write('done.');
 
         return Command::SUCCESS;
     }

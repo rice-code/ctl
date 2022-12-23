@@ -2,11 +2,11 @@
 
 namespace Rice\Ctl\Generate\Documentation;
 
-use PhpCsFixer\DocBlock\DocBlock;
 use PhpCsFixer\Preg;
 use PhpCsFixer\Tokenizer\Token;
-use Rice\Basic\Support\Properties\Properties;
-use Rice\Basic\Support\Properties\Property;
+use PhpCsFixer\DocBlock\DocBlock;
+use Rice\Ctl\Generate\Properties\Property;
+use Rice\Ctl\Generate\Properties\Properties;
 
 class AccessorGenerator extends Generator
 {

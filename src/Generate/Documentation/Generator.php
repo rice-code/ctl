@@ -6,6 +6,7 @@ use Rice\Basic\Enum\BaseEnum;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use Rice\Basic\Exception\SupportException;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use PhpCsFixer\Tokenizer\Analyzer\NamespacesAnalyzer;
 
@@ -30,7 +31,7 @@ abstract class Generator
         $this->filePath = $filePath;
 
         if (!(new Filesystem())->exists($this->filePath)) {
-            throw new SupportException(BaseEnum::FILE_NOT_EXISTS);
+            throw new IOException('file not exists');
         }
 
         $content      = file_get_contents($this->filePath);

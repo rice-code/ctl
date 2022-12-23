@@ -3,7 +3,7 @@
 namespace Rice\Ctl\Extra;
 
 use Illuminate\Support\ServiceProvider;
-use Rice\Ctl\Console\Command\FixCommand;
+use Rice\Ctl\Console\Command\AccessorCommand;
 use Rice\Ctl\Console\Command\JsonToClassCommand;
 
 class LaravelProvider extends ServiceProvider
@@ -26,7 +26,7 @@ class LaravelProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                FixCommand::class,
+                AccessorCommand::class,
                 JsonToClassCommand::class,
             ]);
         }
