@@ -27,6 +27,13 @@
         "symfony/console": "^5.4",
         "phpunit/phpunit": "^9.5"
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rice\\Ctl\\Extra\\LaravelProvider"
+            ]
+        }
+    },
     "scripts": {
         "test": [
             "phpunit"

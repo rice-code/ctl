@@ -5,3 +5,156 @@
 
 ## php 命令行 （php control）
 
+### 安装
+
+```shell script
+composer require rice/ctl
+```
+
+### 功能点
+1. setting, getting 注释生成命令 [锚点](#访问器自动生成注释)
+2. json 转 class 对象命令 [锚点](#json-转-class-对象)
+
+
+### 访问器自动生成注释
+
+以这个 `tests\Support\Annotation\Cat.php` 文件为例，我们使用了 `Accessor` 这个 `trait`。所以会
+存在 `setxxx()` 和 `getxxx()`，但是这里面会造成实例化类后调用没有相关的函数提示。为了解决这个问题，可以
+使用 `php generator.php rice:accessor xxx\tests\Support\Annotation\Cat.php` 去执行自动生成注释。
+
+> 只会生成protected 属性的注释，如果属性没有指定类型，那么会查看注释是否有 @var 指定相关类型，有的
+> 话自动获取
+
+生成前：
+```php
+class Cat
+{
+    use AutoFillProperties;
+    use Accessor;
+
+    /**
+     * 眼睛.
+     *
+     * @return $this
+     *
+     * @throws \Exception
+     *
+     * @var string
+     * @Param $class
+     */
+    protected $eyes;
+
+    /**
+     * @var Eat
+     */
+    protected $eat;
+
+    /**
+     * @var S
+     */
+    protected $speak;
+
+    /**
+     * @var string[]
+     */
+    protected $hair;
+}
+```
+
+生成后：
+```php
+/**
+ * Class Cat.
+ * @method self     setEyes(string $value)
+ * @method string   getEyes()
+ * @method self     setEat(Eat $value)
+ * @method Eat      getEat()
+ * @method self     setSpeak(S $value)
+ * @method S        getSpeak()
+ * @method self     setHair(string[] $value)
+ * @method string[] getHair()
+ */
+class Cat
+{
+    use AutoFillProperties;
+    use Accessor;
+
+    /**
+     * 眼睛.
+     *
+     * @return $this
+     *
+     * @throws \Exception
+     *
+     * @var string
+     * @Param $class
+     */
+    protected $eyes;
+
+    /**
+     * @var Eat
+     */
+    protected $eat;
+
+    /**
+     * @var S
+     */
+    protected $speak;
+
+    /**
+     * @var string[]
+     */
+    protected $hair;
+}
+
+```
+
+### json 转 class 对象
+
+`_class_name`: 类名称
+`_type`: 类的类型（DTO 或 Entity）
+`_namespace`: 类的命名空间
+
+调用 `php generator.php rice:json_to_class xxx\basic\tests\Generate\tsconfig.json xxx\basic\tests\Generate\`
+
+第一个参数是输入的 `json` 文件路径，第二个参数是生成文件所在的目录
+
+```json
+{
+  "_class_name": "Test",
+  "_type": "Entity",
+  "_namespace": "Tests\\Generate",
+  "data": [
+    {
+      "insights": {
+        "data": [
+          {
+            "name": "post_impressions",
+            "period": "lifetime",
+            "values": [
+              {
+                "value": 614
+              }
+            ],
+            "title": "Lifetime Post Total Impressions",
+            "description": "Lifetime: The number of times your Page's post entered a person's screen. Posts include statuses, photos, links, videos and more. (Total Count)"
+          }
+        ],
+        "paging": {
+          "previous": "xxxxxxxxxxxxxxx",
+          "next": "yyyyyyyyyyyyyyy"
+        }
+      },
+      "created_time": "2021-10-13T16:11:55+0000",
+      "message": "Very important message"
+    }
+  ],
+  "paging": {
+    "cursors": {
+      "before": "xxxxxxxxxxxxxxx",
+      "after": "yyyyyyyyyyyyyyy"
+    },
+    "next": "zzzzzzzzzz"
+  }
+}
+```
