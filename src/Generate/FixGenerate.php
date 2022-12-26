@@ -9,7 +9,9 @@ class FixGenerate
 {
     public static function handle($dirPath)
     {
-        (new Application())->run(new ArrayInput([
+        $app = (new Application());
+        $app->setAutoExit(false);
+        $app->run(new ArrayInput([
             'command' => 'fix',
             'path'    => [$dirPath],
         ]));

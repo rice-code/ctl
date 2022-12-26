@@ -2,8 +2,6 @@
 
 namespace Rice\Ctl\Generate;
 
-use Rice\Basic\PathManager;
-
 class FileGenerate
 {
     protected $jsonFilePath;
@@ -23,7 +21,7 @@ class FileGenerate
         $this->jsonFilePath = $jsonFilePath;
         $this->dirPath      = $dirPath;
         $this->tpl          = file_get_contents(
-            __DIR__.DIRECTORY_SEPARATOR.'..'. DIRECTORY_SEPARATOR . 'Template' . DIRECTORY_SEPARATOR . 'Class.php.tpl'
+            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Template' . DIRECTORY_SEPARATOR . 'Class.php.tpl'
         );
     }
 
@@ -130,6 +128,7 @@ EOF;
 
                 break;
         }
+
         return $fields;
     }
 }

@@ -1,14 +1,12 @@
 <?php
 
-namespace Rice\Ctl\Generate\Documentation;
+namespace Rice\Ctl\Generate;
 
-use Rice\Basic\Enum\BaseEnum;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
-use Rice\Basic\Exception\SupportException;
-use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use PhpCsFixer\Tokenizer\Analyzer\NamespacesAnalyzer;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 abstract class Generator
 {

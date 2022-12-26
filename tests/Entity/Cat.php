@@ -2,16 +2,6 @@
 
 namespace Tests\Entity;
 
-/**
- * @method self setEyes(string $value)
- * @method string getEyes()
- * @method self setEat(Eat $value)
- * @method Eat getEat()
- * @method self setSpeak(S $value)
- * @method S getSpeak()
- * @method self setHair(string[] $value)
- * @method string[] getHair()
- */
 class Cat
 {
     /**
