@@ -12,4 +12,4 @@ vendor/
 *.lock
 .phpunit*
 *.cache
-tests/generate
+tests/Generate/*.php
