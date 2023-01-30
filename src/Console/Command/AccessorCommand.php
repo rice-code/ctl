@@ -2,6 +2,7 @@
 
 namespace Rice\Ctl\Console\Command;
 
+use Exception;
 use Rice\Ctl\Generate\FixGenerate;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,14 +26,17 @@ class AccessorCommand extends Command
             ->setHelp('This command allows you to create a setting getting function');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @throws Exception
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-            $path = $input->getArgument('path')[0];
-            (new AccessorGenerator($path))->apply();
+        $path = $input->getArgument('path')[0];
+        (new AccessorGenerator($path))->apply();
 
-            FixGenerate::handle($path);
+        FixGenerate::handle($path);
 
-            $output->write('done.');
+        $output->write('done.');
 
         return Command::SUCCESS;
     }

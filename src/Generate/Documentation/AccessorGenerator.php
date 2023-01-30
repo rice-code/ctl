@@ -43,7 +43,7 @@ class AccessorGenerator extends Generator
         file_put_contents($this->filePath, $this->tokens->generateCode());
     }
 
-    public function generateLines()
+    public function generateLines(): array
     {
         $namespace  = $this->getNamespace()[0]->getFullName() . DIRECTORY_SEPARATOR . $this->getClassName();
         $properties = new Properties($namespace);
@@ -107,14 +107,14 @@ class AccessorGenerator extends Generator
             if (!empty($matchs)) {
                 $content                     = Preg::replace('/@method\s*(.*\))/', $this->docMap[$matchs[1]][0], $line->getContent());
                 $this->docMap[$matchs[1]][0] = trim($content, " \t\n\r\0\x0B*");
-                $lines[$idx]->setContent('');
+                $line->setContent('');
             }
 
             Preg::match('/@method.*get(\S+)\(/ux', $line->getContent(), $matchs);
             if (!empty($matchs)) {
                 $content                     = Preg::replace('/@method\s*(.*\))/', $this->docMap[$matchs[1]][1], $line->getContent());
                 $this->docMap[$matchs[1]][1] = trim($content, " \t\n\r\0\x0B*");
-                $lines[$idx]->setContent('');
+                $line->setContent('');
             }
         }
 
