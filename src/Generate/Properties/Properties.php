@@ -2,6 +2,8 @@
 
 namespace Rice\Ctl\Generate\Properties;
 
+use ReflectionException;
+
 class Properties
 {
     protected $refectionClass;
@@ -11,6 +13,9 @@ class Properties
      */
     protected $properties;
 
+    /**
+     * @throws ReflectionException
+     */
     public function __construct(string $namespace)
     {
         $this->refectionClass = new \ReflectionClass($namespace);
