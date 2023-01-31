@@ -2,7 +2,9 @@
 
 namespace Rice\Ctl\Generate\Documentation;
 
+use Exception;
 use PhpCsFixer\Preg;
+use ReflectionException;
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\DocBlock\DocBlock;
 use Rice\Ctl\Generate\Properties\Property;
@@ -43,9 +45,18 @@ class AccessorGenerator extends Generator
         file_put_contents($this->filePath, $this->tokens->generateCode());
     }
 
+    /**
+     * @throws ReflectionException
+     * @throws Exception
+     */
     public function generateLines(): array
     {
-        $namespace  = $this->getNamespace()[0]->getFullName() . DIRECTORY_SEPARATOR . $this->getClassName();
+        $namespace  = sprintf(
+            '%s\%s',
+            $this->getNamespace()[0]->getFullName(),
+            $this->getClassName()
+        );
+
         $properties = new Properties($namespace);
         $lines      = [];
         $docMap     = [];
