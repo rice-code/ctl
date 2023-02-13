@@ -15,14 +15,14 @@ abstract class Generator
      *
      * @var string
      */
-    public $filePath;
+    public string $filePath;
 
     /**
      * 文件token.
      *
      * @var Tokens
      */
-    protected $tokens;
+    protected Tokens $tokens;
 
     public function __construct($filePath)
     {
@@ -69,7 +69,7 @@ abstract class Generator
                 }
             }
 
-            throw new \Exception('this file not class');
+            throw new \RuntimeException('this file not class');
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace Rice\Ctl\Console\Command;
 
+use Exception;
 use Rice\Ctl\Generate\FixGenerate;
 use Rice\Ctl\Generate\FileGenerate;
 use Symfony\Component\Console\Command\Command;
@@ -27,7 +28,10 @@ class JsonToClassCommand extends Command
             ->setHelp('This command allows you to create a setting getting function');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @throws Exception
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $jsonFilePath = $input->getArgument('json_file_path');
         $dirPath      = $input->getArgument('dir_path');

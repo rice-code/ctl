@@ -2,12 +2,14 @@
 
 namespace Rice\Ctl\Generate\Documentation;
 
-use PhpCsFixer\DocBlock\DocBlock;
+use Exception;
 use PhpCsFixer\Preg;
+use ReflectionException;
 use PhpCsFixer\Tokenizer\Token;
 use Rice\Ctl\Generate\Generator;
-use Rice\Ctl\Generate\Properties\Properties;
+use PhpCsFixer\DocBlock\DocBlock;
 use Rice\Ctl\Generate\Properties\Property;
+use Rice\Ctl\Generate\Properties\Properties;
 
 class AccessorGenerator extends Generator
 {
@@ -44,9 +46,18 @@ class AccessorGenerator extends Generator
         file_put_contents($this->filePath, $this->tokens->generateCode());
     }
 
-    public function generateLines()
+    /**
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    public function generateLines(): array
     {
-        $namespace  = $this->getNamespace()[0]->getFullName() . DIRECTORY_SEPARATOR . $this->getClassName();
+        $namespace  = sprintf(
+            '%s\%s',
+            $this->getNamespace()[0]->getFullName(),
+            $this->getClassName()
+        );
+
         $properties = new Properties($namespace);
         $lines      = [];
         $docMap     = [];
@@ -108,14 +119,14 @@ class AccessorGenerator extends Generator
             if (!empty($matchs)) {
                 $content                     = Preg::replace('/@method\s*(.*\))/', $this->docMap[$matchs[1]][0], $line->getContent());
                 $this->docMap[$matchs[1]][0] = trim($content, " \t\n\r\0\x0B*");
-                $lines[$idx]->setContent('');
+                $line->setContent('');
             }
 
             Preg::match('/@method.*get(\S+)\(/ux', $line->getContent(), $matchs);
             if (!empty($matchs)) {
                 $content                     = Preg::replace('/@method\s*(.*\))/', $this->docMap[$matchs[1]][1], $line->getContent());
                 $this->docMap[$matchs[1]][1] = trim($content, " \t\n\r\0\x0B*");
-                $lines[$idx]->setContent('');
+                $line->setContent('');
             }
         }
 

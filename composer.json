@@ -13,7 +13,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Rice\\Ctl\\": "src/"
+            "Rice\\Ctl\\": "src/",
+            "Tests\\": "tests"
         }
     },
     "authors": [
@@ -25,7 +26,8 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.13",
         "symfony/console": "^5.4",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "ext-json": "*"
     },
     "extra": {
         "laravel": {

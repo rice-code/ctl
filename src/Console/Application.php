@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rice\Ctl\Console;
 
 use Rice\Ctl\Console\Command\AccessorCommand;
+use Rice\Ctl\Console\Command\I18nCommand;
 use Rice\Ctl\Console\Command\JsonToClassCommand;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Command\ListCommand;
@@ -23,6 +24,7 @@ final class Application extends BaseApplication
         parent::__construct('PHP Control', self::VERSION);
 
         // in alphabetical order
+        $this->add(new I18nCommand());
         $this->add(new AccessorCommand());
         $this->add(new JsonToClassCommand());
     }
