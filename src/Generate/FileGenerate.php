@@ -2,8 +2,6 @@
 
 namespace Rice\Ctl\Generate;
 
-use Rice\Basic\PathManager;
-
 class FileGenerate
 {
     protected $jsonFilePath;
