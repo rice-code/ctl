@@ -3,11 +3,10 @@
 namespace Rice\Ctl\Generate;
 
 use ReflectionException;
-use Symfony\Component\Filesystem\Filesystem;
 
 class I18nGenerate
 {
-    protected const COMMENT_MATCH = '/@?([a-zA-Z-]+)\s+(\S+)/';
+    protected const COMMENT_MATCH = '/@?([a-zA-Z-]+)\s+([^\n^\r]+)\s?/m';
     protected string $inputPath;
     protected string $outputPath;
     protected string $namespace;
@@ -80,7 +79,7 @@ class I18nGenerate
                     if (!in_array($areaCode, $this->areaCodes, true)) {
                         $this->areaCodes[] = $areaCode;
                     }
-                    $this->outputs[$areaCode][$name][$constant->getName()] = $desc;
+                    $this->outputs[$areaCode][$name][$constant->getValue()] = $desc;
                 }
             }
         }
@@ -89,16 +88,15 @@ class I18nGenerate
     public function writeCache(): void
     {
         // areaCode -> fileName -> filedName -> desc
-        $fileSystem = new Filesystem();
         foreach ($this->outputs as $areaCode => $output) {
             $areaPath = $this->outputPath . DIRECTORY_SEPARATOR . $areaCode;
-            if (!$fileSystem->exists($areaPath)) {
-                $fileSystem->mkdir($areaPath);
+            if (!file_exists($areaPath) && !mkdir($areaPath) && !is_dir($areaPath)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $areaPath));
             }
 
             foreach ($output as $fileName => $item) {
-                $filePath = $areaPath . DIRECTORY_SEPARATOR . $fileName . '.json';
-                $fileSystem->dumpFile($filePath, json_encode($item, JSON_UNESCAPED_UNICODE));
+                $filePath = $areaPath . DIRECTORY_SEPARATOR . lcfirst($fileName) . '.json';
+                file_put_contents($filePath, json_encode($item, JSON_UNESCAPED_UNICODE));
             }
         }
     }

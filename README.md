@@ -11,6 +11,16 @@
 composer require rice/ctl
 ```
 
+> 该包依赖 `symfony/console` ，如果你的项目没有安装该依赖包，那执行命令行会报错
+
+```shell
+# 安装依赖包
+composer require symfony/console
+# 执行完命令后可以直接删除
+composer remove rice/ctl
+composer remove symfony/console
+```
+
 ### 功能点
 1. setting, getting 注释生成命令 [锚点](#访问器自动生成注释)
 2. json 转 class 对象命令 [锚点](#json-转-class-对象)

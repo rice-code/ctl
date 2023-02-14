@@ -4,7 +4,6 @@ namespace Rice\Ctl\Generate;
 
 use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
-use Symfony\Component\Filesystem\Filesystem;
 use PhpCsFixer\Tokenizer\Analyzer\NamespacesAnalyzer;
 use Symfony\Component\Filesystem\Exception\IOException;
 
@@ -28,7 +27,7 @@ abstract class Generator
     {
         $this->filePath = $filePath;
 
-        if (!(new Filesystem())->exists($this->filePath)) {
+        if (!file_exists($this->filePath)) {
             throw new IOException('file not exists');
         }
 
