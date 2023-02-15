@@ -2,6 +2,7 @@
 
 namespace Rice\Ctl\Extra;
 
+use Rice\Ctl\Generate\I18nGenerate;
 use Illuminate\Support\ServiceProvider;
 use Rice\Ctl\Console\Command\AccessorCommand;
 use Rice\Ctl\Console\Command\JsonToClassCommand;
@@ -26,6 +27,7 @@ class LaravelProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
+                I18nGenerate::class,
                 AccessorCommand::class,
                 JsonToClassCommand::class,
             ]);
