@@ -11,10 +11,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class I18nCommand extends Command
 {
-    protected static $defaultName = 'i18n:cache';
+    protected static $defaultName = 'rice:i18n';
 
     // the command description shown when running "php bin/console list"
-    protected static $defaultDescription = 'Internationalization cache generation.';
+    protected static $defaultDescription = 'i18n cache generation.';
 
     // ...
     protected function configure(): void
