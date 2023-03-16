@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Rice\Ctl\Console;
 
-use Rice\Ctl\Console\Command\AccessorCommand;
 use Rice\Ctl\Console\Command\I18nCommand;
+use Rice\Ctl\Console\Command\AccessorCommand;
 use Rice\Ctl\Console\Command\JsonToClassCommand;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Command\ListCommand;

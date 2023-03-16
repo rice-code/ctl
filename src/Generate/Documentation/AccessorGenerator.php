@@ -14,9 +14,9 @@ use Rice\Ctl\Generate\Properties\Properties;
 
 class AccessorGenerator extends Generator
 {
-    protected const CLASS_TOKENS = [T_CLASS, T_TRAIT, T_INTERFACE, T_ABSTRACT];
-    const ACCESS_PATTERN         = '/@method\s+\S+\s+[sg]et(\S+)\(/ux';
-    const REPLACE_PATTERN        = '/@method\s*(.*\))/';
+    protected const CLASS_TOKENS        = [T_CLASS, T_TRAIT, T_INTERFACE, T_ABSTRACT];
+    public const ACCESS_PATTERN         = '/@method\s+\S+\s+[sg]et(\S+)\(/ux';
+    public const REPLACE_PATTERN        = '/@method\s*(.*\))/';
 
     protected $lines;
 
