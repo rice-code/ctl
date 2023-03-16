@@ -8,12 +8,15 @@ use ReflectionException;
 use PhpCsFixer\Tokenizer\Token;
 use Rice\Ctl\Generate\Generator;
 use PhpCsFixer\DocBlock\DocBlock;
+use Rice\Basic\Entity\FrameEntity;
 use Rice\Ctl\Generate\Properties\Property;
 use Rice\Ctl\Generate\Properties\Properties;
 
 class AccessorGenerator extends Generator
 {
     protected const CLASS_TOKENS = [T_CLASS, T_TRAIT, T_INTERFACE, T_ABSTRACT];
+    const ACCESS_PATTERN         = '/@method\s+\S+\s+[sg]et(\S+)\(/ux';
+    const REPLACE_PATTERN        = '/@method\s*(.*\))/';
 
     protected $lines;
 
@@ -115,19 +118,15 @@ class AccessorGenerator extends Generator
             }
 
             $len = $idx + 1;
-            Preg::match('/@method.*set(\S+)\(/ux', $line->getContent(), $matchs);
-            if (!empty($matchs)) {
-                $content                     = Preg::replace('/@method\s*(.*\))/', $this->docMap[$matchs[1]][0], $line->getContent());
-                $this->docMap[$matchs[1]][0] = trim($content, " \t\n\r\0\x0B*");
-                $line->setContent('');
+            Preg::match(self::ACCESS_PATTERN, $line->getContent(), $matchs);
+
+            if (empty($matchs) || (class_exists(FrameEntity::class) && FrameEntity::inFilter($matchs[1]))) {
+                continue;
             }
 
-            Preg::match('/@method.*get(\S+)\(/ux', $line->getContent(), $matchs);
-            if (!empty($matchs)) {
-                $content                     = Preg::replace('/@method\s*(.*\))/', $this->docMap[$matchs[1]][1], $line->getContent());
-                $this->docMap[$matchs[1]][1] = trim($content, " \t\n\r\0\x0B*");
-                $line->setContent('');
-            }
+            $content                     = Preg::replace(self::REPLACE_PATTERN, $this->docMap[$matchs[1]][0], $line->getContent());
+            $this->docMap[$matchs[1]][0] = trim($content, " \t\n\r\0\x0B*");
+            $line->setContent('');
         }
 
         [$firstArr, $secondArr] = array_chunk($lines, $len);

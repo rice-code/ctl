@@ -23,7 +23,7 @@
             "email": "1015814408@qq.com"
         }
     ],
-    "require-dev": {
+    "require": {
         "friendsofphp/php-cs-fixer": "^3.13",
         "symfony/console": "^5.4",
         "phpunit/phpunit": "^9.5",
