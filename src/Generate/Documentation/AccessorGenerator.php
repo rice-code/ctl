@@ -8,15 +8,15 @@ use ReflectionException;
 use PhpCsFixer\Tokenizer\Token;
 use Rice\Ctl\Generate\Generator;
 use PhpCsFixer\DocBlock\DocBlock;
-use Rice\Basic\Entity\FrameEntity;
 use Rice\Ctl\Generate\Properties\Property;
 use Rice\Ctl\Generate\Properties\Properties;
+use Rice\Basic\components\Entity\FrameEntity;
 
 class AccessorGenerator extends Generator
 {
-    protected const CLASS_TOKENS        = [T_CLASS, T_TRAIT, T_INTERFACE, T_ABSTRACT];
-    public const ACCESS_PATTERN         = '/@method\s+\S+\s+[sg]et(\S+)\(/ux';
-    public const REPLACE_PATTERN        = '/@method\s*(.*\))/';
+    protected const CLASS_TOKENS = [T_CLASS, T_TRAIT, T_INTERFACE, T_ABSTRACT];
+    const ACCESS_PATTERN         = '/@method\s+\S+\s+[sg]et(\S+)\(/ux';
+    const REPLACE_PATTERN        = '/@method\s*(.*\))/';
 
     protected $lines;
 
@@ -70,6 +70,11 @@ class AccessorGenerator extends Generator
              */
             $propertyDocType = $this->getDocPropertyType($property->docComment);
 
+            // 框架变量不用添加提示函数
+            if ($this->skipFrameVars($property->name)) {
+                continue;
+            }
+
             $name = ucfirst($property->name);
 
             if ('' !== $propertyDocType || !is_null($property->type)) {
@@ -120,7 +125,7 @@ class AccessorGenerator extends Generator
             $len = $idx + 1;
             Preg::match(self::ACCESS_PATTERN, $line->getContent(), $matchs);
 
-            if (empty($matchs) || (class_exists(FrameEntity::class) && FrameEntity::inFilter($matchs[1]))) {
+            if (empty($matchs)) {
                 continue;
             }
 
@@ -154,5 +159,14 @@ class AccessorGenerator extends Generator
         }
 
         return $types;
+    }
+
+    /**
+     * @param $match
+     * @return bool
+     */
+    private function skipFrameVars($match): bool
+    {
+        return class_exists(FrameEntity::class) && FrameEntity::inFilter($match);
     }
 }
