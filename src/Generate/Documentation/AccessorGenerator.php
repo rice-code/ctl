@@ -16,13 +16,15 @@ class AccessorGenerator extends Generator
 {
     protected const CLASS_TOKENS        = [T_CLASS, T_TRAIT, T_INTERFACE, T_ABSTRACT];
     public const ACCESS_PATTERN         = '/@method\s+\S+\s+([sg]et)(\S+)\(/ux';
-    public const REPLACE_PATTERN        = '/@method\s*(.*\))/';
+    public const REPLACE_PATTERN        = '/@method\s*(.*)/';
 
-    protected $lines;
+    protected array $lines;
 
-    protected $docMap;
-
-    public function apply()
+    /**
+     * @throws ReflectionException
+     * @return void
+     */
+    public function apply(): void
     {
         $this->lines = $this->generateLines();
 
@@ -67,6 +69,10 @@ class AccessorGenerator extends Generator
             /**
              * @var Property $property
              */
+            if (empty($property->docComment)) {
+                continue;
+            }
+            $docComment      = $this->getBlockComment($property);
             $propertyDocType = $this->getDocPropertyType($property->docComment);
 
             // 框架变量不用添加提示函数
@@ -81,9 +87,10 @@ class AccessorGenerator extends Generator
             }
 
             $lines[$name]['set'] = sprintf(
-                '@method self set%s(%s $value)',
+                '@method self set%s(%s $value) %s',
                 $name,
-                $typeName
+                $typeName,
+                $docComment
             );
             $lines[$name]['get'] = sprintf(
                 '@method %s get%s()',
@@ -156,5 +163,29 @@ class AccessorGenerator extends Generator
     private function skipFrameVars($match): bool
     {
         return class_exists(FrameEntity::class) && FrameEntity::inFilter($match);
+    }
+
+    /**
+     * 获取注释说明.
+     *
+     * @param Property $property
+     * @return string
+     */
+    public function getBlockComment(Property $property): string
+    {
+        $lines = (new DocBlock($property->docComment))->getLines();
+
+        $docComment = '';
+        foreach ($lines as $line) {
+            if ($line->isTheStart() || $line->isTheEnd()) {
+                continue;
+            }
+            if ($line->containsATag()) {
+                break;
+            }
+            $docComment .= ltrim($line->getContent(), " \t\n\r\0\x0B*");
+        }
+
+        return rtrim($docComment);
     }
 }

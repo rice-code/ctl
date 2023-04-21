@@ -3,7 +3,7 @@
 namespace Tests\Entity;
 
 /**
- * @method self setEyes(string $value)
+ * @method self setEyes(string $value) 眼睛.
  * @method string getEyes()
  * @method self setSpeak(S $value)
  * @method S getSpeak()
@@ -13,6 +13,8 @@ namespace Tests\Entity;
 class Cat
 {
     /**
+     * 眼睛.
+     *
      * @var string
      */
     protected $eyes;

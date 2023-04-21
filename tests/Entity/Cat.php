@@ -5,6 +5,8 @@ namespace Tests\Entity;
 class Cat
 {
     /**
+     * 眼睛.
+     *
      * @var string
      */
     protected $eyes;
