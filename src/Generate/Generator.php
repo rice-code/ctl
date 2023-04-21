@@ -40,7 +40,8 @@ abstract class Generator
         $comment = '/**' . PHP_EOL;
 
         foreach ($lines as $line) {
-            $comment .= rtrim(' * ' . $line) . PHP_EOL;
+            $comment .= rtrim(' * ' . $line['set']) . PHP_EOL;
+            $comment .= rtrim(' * ' . $line['get']) . PHP_EOL;
         }
 
         return $comment . ' */' . PHP_EOL;

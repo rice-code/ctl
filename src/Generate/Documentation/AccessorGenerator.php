@@ -15,7 +15,7 @@ use Rice\Basic\components\Entity\FrameEntity;
 class AccessorGenerator extends Generator
 {
     protected const CLASS_TOKENS        = [T_CLASS, T_TRAIT, T_INTERFACE, T_ABSTRACT];
-    public const ACCESS_PATTERN         = '/@method\s+\S+\s+[sg]et(\S+)\(/ux';
+    public const ACCESS_PATTERN         = '/@method\s+\S+\s+([sg]et)(\S+)\(/ux';
     public const REPLACE_PATTERN        = '/@method\s*(.*\))/';
 
     protected $lines;
@@ -24,7 +24,7 @@ class AccessorGenerator extends Generator
 
     public function apply()
     {
-        [$this->lines, $this->docMap] = $this->generateLines();
+        $this->lines = $this->generateLines();
 
         for ($index = 0, $limit = \count($this->tokens); $index < $limit; ++$index) {
             /**
@@ -63,7 +63,6 @@ class AccessorGenerator extends Generator
 
         $properties = new Properties($namespace);
         $lines      = [];
-        $docMap     = [];
         foreach ($properties->getProperties() as $property) {
             /**
              * @var Property $property
@@ -77,24 +76,17 @@ class AccessorGenerator extends Generator
 
             $name = ucfirst($property->name);
 
+            $lines[$name]['set'] = sprintf('@method self set%s($value)', $name);
+            $lines[$name]['get'] = sprintf('@method get%s()', $name);
+
             if ('' !== $propertyDocType || !is_null($property->type)) {
-                $typeName        = $property->type ? $property->name : $propertyDocType;
-                $lines[]         = sprintf(
+                $typeName            = $property->type ? $property->name : $propertyDocType;
+                $lines[$name]['set'] = sprintf(
                     '@method self set%s(%s $value)',
                     $name,
                     $typeName
                 );
-                $docMap[$name][] = sprintf(
-                    '@method self set%s(%s $value)',
-                    $name,
-                    $typeName
-                );
-                $lines[]         = sprintf(
-                    '@method %s get%s()',
-                    $typeName,
-                    $name
-                );
-                $docMap[$name][] = sprintf(
+                $lines[$name]['get'] = sprintf(
                     '@method %s get%s()',
                     $typeName,
                     $name
@@ -102,14 +94,9 @@ class AccessorGenerator extends Generator
 
                 continue;
             }
-
-            $lines[]         = sprintf('@method self set%s($value)', $name);
-            $docMap[$name][] = sprintf('@method self set%s($value)', $name);
-            $lines[]         = sprintf('@method get%s()', $name);
-            $docMap[$name][] = sprintf('@method get%s()', $name);
         }
 
-        return [$lines, $docMap];
+        return $lines;
     }
 
     public function updateDoc(Token $token): string
@@ -129,22 +116,27 @@ class AccessorGenerator extends Generator
                 continue;
             }
 
-            $content                     = Preg::replace(self::REPLACE_PATTERN, $this->docMap[$matchs[1]][0], $line->getContent());
-            $this->docMap[$matchs[1]][0] = trim($content, " \t\n\r\0\x0B*");
+            $content                             = Preg::replace(self::REPLACE_PATTERN, $this->lines[$matchs[2]][$matchs[1]], $line->getContent());
+            $this->lines[$matchs[2]][$matchs[1]] = trim($content, " \t\n\r\0\x0B*");
             $line->setContent('');
         }
 
         [$firstArr, $secondArr] = array_chunk($lines, $len);
 
-        foreach ($this->docMap as $item) {
-            $firstArr[$len++] = ' * ' . $item[0] . PHP_EOL;
-            $firstArr[$len++] = ' * ' . $item[1] . PHP_EOL;
+        foreach ($this->lines as $line) {
+            $firstArr[$len++] = ' * ' . $line['set'] . PHP_EOL;
+            $firstArr[$len++] = ' * ' . $line['get'] . PHP_EOL;
         }
 
         return implode('', array_merge($firstArr, $secondArr));
     }
 
-    public function getDocPropertyType($doc): string
+    /**
+     * @param $doc
+     * @param string[]|string $types
+     * @return string
+     */
+    public function getDocPropertyType($doc, $types = 'var'): string
     {
         if (false === $doc) {
             return '';
@@ -152,13 +144,13 @@ class AccessorGenerator extends Generator
 
         $docBlock = new DocBlock($doc);
 
-        $types = '';
+        $newTypes = '';
 
-        foreach ($docBlock->getAnnotationsOfType('var') as $annotation) {
-            $types = implode('|', $annotation->getTypes());
+        foreach ($docBlock->getAnnotationsOfType($types) as $annotation) {
+            $newTypes = implode('|', $annotation->getTypes());
         }
 
-        return $types;
+        return $newTypes;
     }
 
     /**
