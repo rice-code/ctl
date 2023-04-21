@@ -74,26 +74,22 @@ class AccessorGenerator extends Generator
                 continue;
             }
 
-            $name = ucfirst($property->name);
-
-            $lines[$name]['set'] = sprintf('@method self set%s($value)', $name);
-            $lines[$name]['get'] = sprintf('@method get%s()', $name);
-
+            $name     = ucfirst($property->name);
+            $typeName = '';
             if ('' !== $propertyDocType || !is_null($property->type)) {
                 $typeName            = $property->type ? $property->name : $propertyDocType;
-                $lines[$name]['set'] = sprintf(
-                    '@method self set%s(%s $value)',
-                    $name,
-                    $typeName
-                );
-                $lines[$name]['get'] = sprintf(
-                    '@method %s get%s()',
-                    $typeName,
-                    $name
-                );
-
-                continue;
             }
+
+            $lines[$name]['set'] = sprintf(
+                '@method self set%s(%s $value)',
+                $name,
+                $typeName
+            );
+            $lines[$name]['get'] = sprintf(
+                '@method %s get%s()',
+                $typeName,
+                $name
+            );
         }
 
         return $lines;
