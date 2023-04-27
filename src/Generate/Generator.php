@@ -35,13 +35,19 @@ abstract class Generator
         $this->tokens = Tokens::fromCode($content);
     }
 
-    protected function getCommentBlock($lines): string
+    protected function getCommentBlock($lines, $hasStatic): string
     {
         $comment = '/**' . PHP_EOL;
 
         foreach ($lines as $line) {
             $comment .= rtrim(' * ' . $line['set']) . PHP_EOL;
+            if ($hasStatic) {
+                $comment .= rtrim(' * ' . str_replace('@method', '@method static', $line['set'])) . PHP_EOL;
+            }
             $comment .= rtrim(' * ' . $line['get']) . PHP_EOL;
+            if ($hasStatic) {
+                $comment .= rtrim(' * ' . str_replace('@method', '@method static', $line['get'])) . PHP_EOL;
+            }
         }
 
         return $comment . ' */' . PHP_EOL;

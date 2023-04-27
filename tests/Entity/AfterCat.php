@@ -7,8 +7,8 @@ namespace Tests\Entity;
  * @method string getEyes()
  * @method self setSpeak(S $value)
  * @method S getSpeak()
- * @method self setHair(string[] $value)
- * @method string[] getHair()
+ * @method self setHair(string $value)
+ * @method string getHair()
  */
 class Cat
 {
@@ -25,7 +25,7 @@ class Cat
     protected $speak;
 
     /**
-     * @var string[]
+     * @var []string
      */
     protected $hair;
 }

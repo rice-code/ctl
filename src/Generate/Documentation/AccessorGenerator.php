@@ -11,14 +11,17 @@ use PhpCsFixer\DocBlock\DocBlock;
 use Rice\Ctl\Generate\Properties\Property;
 use Rice\Ctl\Generate\Properties\Properties;
 use Rice\Basic\components\Entity\FrameEntity;
+use Symfony\Component\Console\Tester\TesterTrait;
 
 class AccessorGenerator extends Generator
 {
-    protected const CLASS_TOKENS        = [T_CLASS, T_TRAIT, T_INTERFACE, T_ABSTRACT];
-    public const ACCESS_PATTERN         = '/@method\s+\S+\s+([sg]et)(\S+)\(/ux';
-    public const REPLACE_PATTERN        = '/@method\s*(.*)/';
+    protected const CLASS_TOKENS                 = [T_CLASS, T_TRAIT, T_INTERFACE, T_ABSTRACT];
+    public const ACCESS_PATTERN                  = '/@method\s+\S+\s+([sg]et)(\S+)\(/ux';
+    public const REPLACE_PATTERN                 = '/@method\s*(.*)/';
+    public const AUTO_REGISTER_SINGLETON_PATTERN = '/use\s+AutoRegisterSingleton;/';
 
     protected array $lines;
+    protected bool $hasAutoRegisterSingleton = false;
 
     /**
      * @throws ReflectionException
@@ -26,6 +29,9 @@ class AccessorGenerator extends Generator
      */
     public function apply(): void
     {
+        // 判断是否存在 autoRegisterSingleton  trait 类
+        $this->hasAutoRegisterSingleton();
+
         $this->lines = $this->generateLines();
 
         for ($index = 0, $limit = \count($this->tokens); $index < $limit; ++$index) {
@@ -41,11 +47,11 @@ class AccessorGenerator extends Generator
             $idx = $this->tokens->getPrevTokenOfKind($index, [[T_DOC_COMMENT]]);
 
             if (null !== $idx) {
-                $this->tokens[$idx] = new Token([T_DOC_COMMENT, $this->updateDoc($this->tokens[$idx])]);
+                $this->tokens[$idx] = new Token([T_DOC_COMMENT, $this->updateDoc($this->tokens[$idx], $this->hasAutoRegisterSingleton)]);
 
                 continue;
             }
-            $this->tokens->insertAt($index, [new Token([T_DOC_COMMENT, $this->getCommentBlock($this->lines)])]);
+            $this->tokens->insertAt($index, [new Token([T_DOC_COMMENT, $this->getCommentBlock($this->lines, $this->hasAutoRegisterSingleton)])]);
         }
 
         file_put_contents($this->filePath, $this->tokens->generateCode());
@@ -69,11 +75,10 @@ class AccessorGenerator extends Generator
             /**
              * @var Property $property
              */
-            if (empty($property->docComment)) {
+            if (!$property->type) {
                 continue;
             }
             $docComment      = $this->getBlockComment($property);
-            $propertyDocType = $this->getDocPropertyType($property->docComment);
 
             // 框架变量不用添加提示函数
             if ($this->skipFrameVars($property->name)) {
@@ -81,20 +86,16 @@ class AccessorGenerator extends Generator
             }
 
             $name     = ucfirst($property->name);
-            $typeName = '';
-            if ('' !== $propertyDocType || !is_null($property->type)) {
-                $typeName            = $property->type ? $property->name : $propertyDocType;
-            }
 
             $lines[$name]['set'] = sprintf(
                 '@method self set%s(%s $value) %s',
                 $name,
-                $typeName,
+                $property->type,
                 $docComment
             );
             $lines[$name]['get'] = sprintf(
                 '@method %s get%s()',
-                $typeName,
+                $property->type,
                 $name
             );
         }
@@ -102,7 +103,16 @@ class AccessorGenerator extends Generator
         return $lines;
     }
 
-    public function updateDoc(Token $token): string
+    public function hasAutoRegisterSingleton(): void
+    {
+        preg_match(self::AUTO_REGISTER_SINGLETON_PATTERN, $this->tokens->generateCode(), $matches);
+
+        if (count($matches) > 0) {
+            $this->hasAutoRegisterSingleton = true;
+        }
+    }
+
+    public function updateDoc(Token $token, $hasStatic): string
     {
         $doc   = new DocBlock($token->getContent());
         $lines = $doc->getLines();
@@ -128,32 +138,16 @@ class AccessorGenerator extends Generator
 
         foreach ($this->lines as $line) {
             $firstArr[$len++] = ' * ' . $line['set'] . PHP_EOL;
+            if ($hasStatic) {
+                $firstArr[$len++] = ' * ' . str_replace('@method', '@method static', $line['set']) . PHP_EOL;
+            }
             $firstArr[$len++] = ' * ' . $line['get'] . PHP_EOL;
+            if ($hasStatic) {
+                $firstArr[$len++] = ' * ' . str_replace('@method', '@method static', $line['get']) . PHP_EOL;
+            }
         }
 
         return implode('', array_merge($firstArr, $secondArr));
-    }
-
-    /**
-     * @param $doc
-     * @param string[]|string $types
-     * @return string
-     */
-    public function getDocPropertyType($doc, $types = 'var'): string
-    {
-        if (false === $doc) {
-            return '';
-        }
-
-        $docBlock = new DocBlock($doc);
-
-        $newTypes = '';
-
-        foreach ($docBlock->getAnnotationsOfType($types) as $annotation) {
-            $newTypes = implode('|', $annotation->getTypes());
-        }
-
-        return $newTypes;
     }
 
     /**

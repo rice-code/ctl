@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Rice\Ctl\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Tests\Entity\Speak;
 
 class AccessorTest extends TestCase
 {

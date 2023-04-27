@@ -17,7 +17,7 @@ class Cat
     protected $speak;
 
     /**
-     * @var string[]
+     * @var []string
      */
     protected $hair;
 }
