@@ -24,7 +24,6 @@ final class Application extends BaseApplication
         parent::__construct('PHP Control', self::VERSION);
 
         // in alphabetical order
-        $this->add(new I18nCommand());
         $this->add(new AccessorCommand());
         $this->add(new JsonToClassCommand());
     }
