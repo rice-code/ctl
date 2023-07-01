@@ -14,7 +14,6 @@ composer require rice/ctl
 ### 功能点
 1. setting, getting 注释生成命令 [锚点](#访问器自动生成注释)
 2. json 转 class 对象命令 [锚点](#json-转-class-对象)
-3. 多语言国际化（i18n） [锚点](#i18n-缓存生成)
 
 
 ### 访问器自动生成注释
@@ -154,32 +153,3 @@ $cat->getSpeakText();
   }
 }
 ```
-
-### i18n 缓存生成
-
-```php
-interface Other
-{
-    /**
-     * @en one
-     * @zh-CN 一
-     */
-    public const A = '1';
-}
-
-class TestEnum implements Other
-{
-    /**
-     * @default OK
-     */
-    public const OK = '00000';
-}
-```
-抛弃传统的单独配置多语言的描述，因为维护起来非常费劲。在新功能添加新的字段时，多语言
-要在多个文件中进行映射，使用该形式可以让描述与属性绑定在一起，更加清晰。
-
-```shell
-php .\ctl.php i18n:cache xxx\ctl\tests\Enum xxx\ctl\tests\Lang Tests\Enum
-```
-第一个路径是需要生成缓存的目录，第二个是缓存输出的目录，第三个是生成缓存的命名空间前缀
-
